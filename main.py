@@ -73,7 +73,7 @@ def analyze_formulas_xls(file_path: str, keyword: str, target_folder: str) -> bo
                             if not copied:
                                 shutil.copy(file_path, os.path.join(target_folder, os.path.basename(file_path)))
                                 copied = True
-                            with open(os.path.join(target_folder, 'formules_trouvees.txt'), 'a', encoding='utf-8') as f:
+                            with open(os.path.join(target_folder, 'formula_find.txt'), 'a', encoding='utf-8') as f:
                                 f.write(f"Files: {os.path.basename(file_path)}\nSheet: {sheet.name}\nCell: {xlrd.formula.cellname(row_idx, col_idx)}\nFormula: {cell.formula}\n\n")
                             raise StopIteration
     except StopIteration:
@@ -98,7 +98,7 @@ def analyze_formulas_xlsm(file_path: str, keyword: str, target_folder: str) -> b
                         if not copied:
                             shutil.copy(file_path, os.path.join(target_folder, os.path.basename(file_path)))
                             copied = True
-                        with open(os.path.join(target_folder, 'formules_trouvees.txt'), 'a', encoding='utf-8') as f:
+                        with open(os.path.join(target_folder, 'formula_find.txt'), 'a', encoding='utf-8') as f:
                             f.write(f"Files: {os.path.basename(file_path)}\nSheet: {sheet.title}\nCell: {cell.coordinate}\nFormula: {cell.value}\n\n")
                         raise StopIteration
         wb.close()

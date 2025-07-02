@@ -63,3 +63,14 @@ python excel_keyword_analyzer.py --keyword "your_keyword"
 ```
 
 Replace `"your_keyword"` with the keyword you want to search for.
+
+What will you find in the output files?
+
+```
+<output_folder>/<keyword>/
+│
+├── <matched_excel_file_1>.xlsm    # Copy of the Excel file containing the keyword
+├── <matched_excel_file_2>.xls     # (Converted and matched .xls file, if applicable)
+├── <macro_file>.txt               # Extracted macro file containing the keyword
+└── formula_find.txt               # Report of matching formulas found
+```
