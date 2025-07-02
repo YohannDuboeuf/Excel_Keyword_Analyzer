@@ -2,7 +2,7 @@
 
 Excel Keyword Analyzer is a Python tool to **scan Excel files (`.xls`, `.xlsm`) for a specific keyword** in either **VBA macros** or **cell formulas**.
 
-be careful you can onlu search formula in english because we using openpyxl wich is only supporting english
+Be careful: you can only search for formulas in English because we are using openpyxl, which only supports English formula syntax.
 
 ## 🚀 Features
 
@@ -25,7 +25,7 @@ be careful you can onlu search formula in english because we using openpyxl wich
 ### 2. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/excel-keyword-analyzer.git
+git clone https://github.com/YohannDuboeuf/excel-keyword-analyzer.git
 cd excel-keyword-analyzer
 ```
 
