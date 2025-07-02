@@ -85,27 +85,38 @@ def analyze_formulas_xls(file_path: str, keyword: str, target_folder: str) -> bo
 
 def analyze_formulas_xlsm(file_path: str, keyword: str, target_folder: str) -> bool:
     """
-    Analyzes formulas in a .xlsm file to search for the keyword.
+    Analyzes formulas in a .xlsm file one sheet at a time (memory-optimized).
     """
     copied = False
     normalized_keyword = keyword.lower().lstrip("=")
+
     try:
-        wb = load_workbook(file_path, read_only=True, data_only=False, keep_vba=True)
-        for sheet in tqdm(wb.worksheets, desc=f"[{os.path.basename(file_path)}] Sheet (.xlsm)", leave=False):
-            for row in sheet.iter_rows():
+        # Step 1: get list of sheet names using read_only (lightweight)
+        sheet_names = load_workbook(file_path, read_only=True, keep_vba=True).sheetnames
+
+        # Step 2: process each sheet one at a time using full access to formulas
+        for sheet_name in tqdm(sheet_names, desc=f"[{os.path.basename(file_path)}] Sheet (.xlsm)", leave=False):
+            wb = load_workbook(file_path, read_only=False, data_only=False, keep_vba=True)
+            sheet = wb[sheet_name]
+
+            for row in sheet.iter_rows(min_row=1, max_row=sheet.max_row, min_col=1, max_col=sheet.max_column):
                 for cell in row:
                     if cell.value and isinstance(cell.value, str) and normalized_keyword in cell.value.lower():
                         if not copied:
                             shutil.copy(file_path, os.path.join(target_folder, os.path.basename(file_path)))
                             copied = True
                         with open(os.path.join(target_folder, 'formula_find.txt'), 'a', encoding='utf-8') as f:
-                            f.write(f"Files: {os.path.basename(file_path)}\nSheet: {sheet.title}\nCell: {cell.coordinate}\nFormula: {cell.value}\n\n")
-                        raise StopIteration
-        wb.close()
-    except StopIteration:
-        pass
+                            f.write(f"File: {os.path.basename(file_path)}\nSheet: {sheet.title}\nCell: {cell.coordinate}\nFormula: {cell.value}\n\n")
+                del row
+
+            wb.close()
+            del sheet
+            del wb
+            gc.collect()
+
     except Exception as e:
         print(f"❌ Error while processing .xlsm formulas in {file_path} : {e}")
+
     return copied
 
 
