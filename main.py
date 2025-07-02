@@ -46,6 +46,8 @@ def process_all_excels_in_parallel(keyword: str, source_folder: str, output_fold
                 converted = convert_xls_to_xlsx(path, source_folder)
                 if converted:
                     all_excel_files.append(converted)
+            elif file.lower().endswith('xlsx'):
+                all_excel_files.append(path)
 
     # Parallel processing
     with ThreadPoolExecutor(max_workers=os.cpu_count() or 4) as executor:
@@ -119,6 +121,28 @@ def analyze_formulas_xlsm(file_path: str, keyword: str, target_folder: str) -> b
 
     return copied
 
+def analyze_formulas_xlsx(file_path: str, keyword: str, target_folder: str) -> bool:
+    copied = False
+    normalized_keyword = keyword.lower().lstrip("=")
+
+    try:
+        wb = load_workbook(file_path, read_only=False, data_only=False)
+        for sheet in tqdm(wb.worksheets, desc=f"[{os.path.basename(file_path)}] Sheet (.xlsx)", leave=False):
+            for row in sheet.iter_rows(min_row=1, max_row=sheet.max_row, min_col=1, max_col=sheet.max_column):
+                for cell in row:
+                    if cell.value and isinstance(cell.value, str) and normalized_keyword in cell.value.lower():
+                        if not copied:
+                            shutil.copy(file_path, os.path.join(target_folder, os.path.basename(file_path)))
+                            copied = True
+                        with open(os.path.join(target_folder, 'formula_find.txt'), 'a', encoding='utf-8') as f:
+                            f.write(f"File: {os.path.basename(file_path)}\nSheet: {sheet.title}\nCell: {cell.coordinate}\nFormula: {cell.value}\n\n")
+                del row
+        wb.close()
+        gc.collect()
+    except Exception as e:
+        print(f"❌ Error while processing .xlsx formulas in {file_path} : {e}")
+
+    return copied
 
 def extract_macros(file_path: str, keyword: str, target_folder: str) -> bool:
     """
@@ -142,7 +166,6 @@ def extract_macros(file_path: str, keyword: str, target_folder: str) -> bool:
         print(f"Error while processing macros in {file_path} : {e}")
     return copied
 
-
 def process_excel_file(file_path: str, keyword: str, target_folder: str):
     """
     Traite un fichier Excel donné : macros et formules.
@@ -155,11 +178,12 @@ def process_excel_file(file_path: str, keyword: str, target_folder: str):
             copied |= analyze_formulas_xlsm(file_path, keyword, target_folder)
         elif ext == '.xls':
             copied |= analyze_formulas_xls(file_path, keyword, target_folder)
+        elif ext == '.xlsx':
+            copied |= analyze_formulas_xlsx(file_path, keyword, target_folder)
 
         gc.collect()
     except Exception as e:
         print(f"❌ Erreur dans {file_path} : {e}")
-
 
 def convert_xls_to_xlsx(input_path: str, output_folder: str) -> str:
     """
@@ -189,10 +213,11 @@ def convert_xls_to_xlsx(input_path: str, output_folder: str) -> str:
     return None
 
 
+
 if __name__ == '__main__':
     multiprocessing.set_start_method('spawn')
 
-    parser = argparse.ArgumentParser(description='Keyword search in Excel macros and formulas (.xls/.xlsm)')
+    parser = argparse.ArgumentParser(description='Keyword search in Excel macros and formulas (.xls/.xlsm/.xlsx)')
 
     parser.add_argument(
         '-k', '--keyword',

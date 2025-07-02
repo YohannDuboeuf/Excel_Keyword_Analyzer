@@ -4,19 +4,15 @@ Excel Keyword Analyzer is a Python tool to **scan Excel files (`.xls`, `.xlsm`) 
 
 be careful you can onlu search formula in english because we using openpyxl wich is only supporting english
 
----
-
 ## 🚀 Features
 
 - 🔎 Search for a **custom keyword** in:
   - VBA macros embedded in Excel files.
   - Excel formulas (e.g., `=SUM(...)`, `=IF(...)`).
-- 📂 Supports `.xls` and `.xlsm` files.
+- 📂 Supports `.xls` and `.xlsm` and `.xlsx` files.
 - 🔁 Automatically converts `.xls` files to `.xlsx` using LibreOffice.
 - ⚙️ Uses **parallel processing** (multi-threading) for performance.
 - 💻 Clean **command-line interface** with support for `--keyword` or `-k`.
-
----
 
 ## 📦 Installation
 
@@ -43,7 +39,7 @@ pip install -r requirements.txt
 ```
 excel-keyword-analyzer/
 │
-├── assets/                      # Working directory for input/output files
+├── assets/                      # Working directory for input/output filesc
 │   ├── excel/                   # Input: Excel files to scan (.xls, .xlsm)
 │   ├── macro/                   # Temp folder: extracted macro files (.txt)
 │   └── macro_trouves/           # Output: matched Excel/macro files
