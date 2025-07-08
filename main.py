@@ -168,7 +168,7 @@ def extract_macros(file_path: str, keyword: str, target_folder: str) -> bool:
 
 def process_excel_file(file_path: str, keyword: str, target_folder: str):
     """
-    Traite un fichier Excel donné : macros et formules.
+    Work on Excel file : macros & formula.
     """
     ext = os.path.splitext(file_path)[1].lower()
     try:
@@ -187,10 +187,10 @@ def process_excel_file(file_path: str, keyword: str, target_folder: str):
 
 def convert_xls_to_xlsx(input_path: str, output_folder: str) -> str:
     """
-    Convertit un fichier .xls en .xlsx via LibreOffice (headless).
+    Convert .xls in xlsx by LibreOffice (headless).
     """
     if not os.path.exists(input_path):
-        print(f"Fichier introuvable : {input_path}")
+        print(f"File doesn't exist : {input_path}")
         return None
 
     try:
@@ -209,9 +209,8 @@ def convert_xls_to_xlsx(input_path: str, output_folder: str) -> str:
             print(f"✅ Converti : {input_path} → {output_path}")
             return output_path
     except Exception as e:
-        print(f"Erreur conversion LibreOffice : {e}")
+        print(f"Conversion error LibreOffice : {e}")
     return None
-
 
 
 if __name__ == '__main__':
